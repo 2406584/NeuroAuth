@@ -1,9 +1,13 @@
 import { createError, defineEventHandler, readBody } from "h3"
 import argon2 from 'argon2'
+import { PrismaClient } from '../../../generated/prisma/client';
+
 
 
 export default defineEventHandler(async event => {
   const body =  await readBody(event);
+
+  const prisma = new PrismaClient()
 
   const {username , password} = body
   
@@ -16,6 +20,14 @@ export default defineEventHandler(async event => {
     // Hash the password using Argon2id (recommended)
     const hash = await argon2.hash(password, {
       type: argon2.argon2id
+    })
+
+    // Run inside `async` function
+    const user = await prisma.users.create({
+      data: {
+        username: username,
+        password: hash
+      },
     })
 
     // TODO: Save `username` and `hash` to your database

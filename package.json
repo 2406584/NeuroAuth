@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "nitro build",
-    "dev": "nitro dev",
+    "postinstall": "prisma generate",
+    "dev": "prisma generate && nitro dev",
     "preview": "node .output/server/index.mjs"
   },
   "devDependencies": {
@@ -12,6 +13,7 @@
     "prisma": "^6.18.0"
   },
   "dependencies": {
+    "@prisma/client": "^6.18.0",
     "argon2": "^0.44.0",
     "dotenv": "^17.2.3",
     "path": "^0.12.7"

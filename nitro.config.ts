@@ -4,5 +4,9 @@ import { defineNitroConfig } from "nitropack/config"
 export default defineNitroConfig({
   compatibilityDate: "latest",
   srcDir: "server",
-  imports: false
+  imports: false,
+  externals: {
+    inline: []
+  },
+  moduleSideEffects: ['@prisma/client']
 });
