@@ -1,14 +1,23 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import {  createTheme, MantineProvider } from '@mantine/core';
+import '@mantine/core/styles.css';
 
 const App = () => {
+  const theme = createTheme({
+  /** Your theme override here */
+});
+
   return (
+    <MantineProvider theme={theme}>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div>Home Page</div>} />
-        <Route path="/login" element={<div>Login Page</div>} />
-        <Route path="/register" element={<div>Register Page</div>} />
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
+    </MantineProvider>
   )
 }
 
