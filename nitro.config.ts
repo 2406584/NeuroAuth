@@ -10,5 +10,14 @@ export default defineNitroConfig({
   externals: {
     inline: []
   },
+  routeRules: {
+    '/**': {
+      cors: true,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+      },
+    },
+  },
   moduleSideEffects: ['@prisma/client']
 });

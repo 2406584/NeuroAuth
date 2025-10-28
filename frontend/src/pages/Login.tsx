@@ -12,17 +12,50 @@ function Login() {
       username: '',
       password: '',
       termsOfService: false,
-    },
-
-    validate: {
-      username: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid username'),
-    },
+    }
   });
+
+  const submitForm = (values) => {
+    // Handle form submission logic here
+    console.log(values);
+
+    let { username, password, termsOfService } = values;
+
+    if (!termsOfService) {
+      alert("You must agree to the terms of service to log in.");
+      return;
+    }
+
+    // Send login request to the server to get JWT token
+    fetch('http://localhost:3000/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    })  .then(response => {
+        if (!response.ok) {
+            throw new Error('Login failed');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Login successful:', data);
+        // Store the JWT token (e.g., in localStorage)
+        localStorage.setItem('token', data.token);
+        // Redirect to dashboard or another protected route
+        window.location.href = '/dashboard';
+    }
+    ).catch(error => {
+        console.error('Error during login:', error);
+        alert('Login failed: ' + error.message);
+    });
+  }
 
   return (
     <Container>
     <Title order={1}>Login</Title>
-    <form onSubmit={form.onSubmit((values) => console.log(values))}>
+    <form onSubmit={form.onSubmit(submitForm)}>
       <TextInput
         withAsterisk
         label="Username"
