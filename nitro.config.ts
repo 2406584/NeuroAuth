@@ -4,7 +4,9 @@ import { defineNitroConfig } from "nitropack/config"
 export default defineNitroConfig({
   compatibilityDate: "latest",
   srcDir: "server",
-  imports: false,
+  imports: {
+      dirs: ["server/utils"],
+  },
   externals: {
     inline: []
   },
