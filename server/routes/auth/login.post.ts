@@ -17,8 +17,10 @@ export default defineEventHandler(async (event) => {
     const prisma = GetDB();
 
     // Find user by username
-    const user = await prisma.users.findUnique({
-      where: { username }
+    const user = await prisma.users.findFirst({
+      where: { 
+        username: username
+      }
     })
 
     if (!user) {
@@ -40,8 +42,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Generate JWT token
-    const jwtSecretKey = process.env.JWT_SECRET_KEY
-    
+    const jwtSecretKey = process.env.JWT_SECRET_KEY    
     if (!jwtSecretKey) {
       throw createError({
         statusCode: 500,
@@ -51,23 +52,23 @@ export default defineEventHandler(async (event) => {
 
     const token = jwt.sign(
       {
-        userId: user.id,
+        userId: typeof user.id === "bigint" ? user.id.toString() : user.id,
         username: user.username,
         time: new Date().toISOString()
       },
       jwtSecretKey,
-      { expiresIn: "7d" } // Token expires in 7 days
+      { expiresIn: "7d" }
     )
 
-    // Return user info and token (don't send password)
+    const safeUser = {
+      id: typeof user.id === "bigint" ? user.id.toString() : user.id,
+      username: user.username    
+    }
+
     return {
       success: true,
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email
-      }
+      user: safeUser,
+      token
     }
 
   } catch (error: any) {
