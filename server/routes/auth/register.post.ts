@@ -1,13 +1,12 @@
 import { createError, defineEventHandler, readBody } from "h3"
 import argon2 from 'argon2'
-import { PrismaClient } from '../../../generated/prisma/client';
 
 
 
 export default defineEventHandler(async event => {
   const body =  await readBody(event);
 
-  const prisma = new PrismaClient()
+  const prisma = GetDB();
 
   const {username , password} = body
   
