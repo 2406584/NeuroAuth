@@ -1,13 +1,14 @@
 import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import type { LoginFormValues } from '../interfaces/AuthInterface';
 
-function Login() {
-  const [visible, { toggle }] = useDisclosure(false);
 
- 
+function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void }) {
+  const [visible, { toggle }] = useDisclosure(false); 
+  const location = useLocation();
+
 
   const form = useForm<LoginFormValues>({
     mode: 'uncontrolled',
@@ -43,9 +44,9 @@ function Login() {
         return response.json();
     })
     .then(data => {
-        console.log('Login successful:', data);
-        // Store the JWT token (e.g., in localStorage)
+        setAuthenticated(true);
         localStorage.setItem('token', data.token);
+        location.pathname === '/login' ? window.location.href = '/dashboard' : window.location.reload();
     }
     ).catch(error => {
         console.error('Error during login:', error);
@@ -60,7 +61,7 @@ function Login() {
       <TextInput
         withAsterisk
         label="Username"
-        placeholder="YourUsername"
+        placeholder="Your Username"
         key={form.key('username')}
         {...form.getInputProps('username')}
       />
@@ -68,7 +69,7 @@ function Login() {
        <PasswordInput
         withAsterisk
         label="Password"
-        placeholder='YourPassword'
+        placeholder='Your Password'
         key={form.key('password')}
         {...form.getInputProps('password')}
         visible={visible}
@@ -77,7 +78,7 @@ function Login() {
 
       <Checkbox
         mt="md"
-        label="I agree to sell my privacy"
+        label="I agree to participate in this research study"
         key={form.key('termsOfService')}
         {...form.getInputProps('termsOfService', { type: 'checkbox' })}
       />

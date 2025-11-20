@@ -23,7 +23,7 @@ export default defineEventHandler(async event => {
     })
 
     // Run inside `async` function
-    const user = await prisma.users.create({
+    await prisma.users.create({
       data: {
         username: username,
         password: hash
