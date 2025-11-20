@@ -2,11 +2,12 @@ import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title } f
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router';
+import type { RegisterFormValues } from '../interfaces/AuthInterface';
 
 function Register() {
       const [visible, { toggle }] = useDisclosure(false);
 
-  const form = useForm({
+  const form = useForm<RegisterFormValues>({
     mode: 'uncontrolled',
     initialValues: {
       username: '',
@@ -21,7 +22,7 @@ function Register() {
     },
   });
 
-  const submitForm = (values) => {
+  const submitForm = (values: RegisterFormValues) => {
     // fetch registration request to the server
     let { username, password, termsOfService } = values;
     if (!termsOfService) {

@@ -2,11 +2,14 @@ import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title } f
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router';
+import type { LoginFormValues } from '../interfaces/AuthInterface';
 
 function Login() {
-      const [visible, { toggle }] = useDisclosure(false);
+  const [visible, { toggle }] = useDisclosure(false);
 
-  const form = useForm({
+ 
+
+  const form = useForm<LoginFormValues>({
     mode: 'uncontrolled',
     initialValues: {
       username: '',
@@ -15,7 +18,7 @@ function Login() {
     }
   });
 
-  const submitForm = (values) => {
+  const submitForm = (values: LoginFormValues) => {
     // Handle form submission logic here
     console.log(values);
 
@@ -43,8 +46,6 @@ function Login() {
         console.log('Login successful:', data);
         // Store the JWT token (e.g., in localStorage)
         localStorage.setItem('token', data.token);
-        // Redirect to dashboard or another protected route
-        window.location.href = '/dashboard';
     }
     ).catch(error => {
         console.error('Error during login:', error);
@@ -55,7 +56,7 @@ function Login() {
   return (
     <Container>
     <Title order={1}>Login</Title>
-    <form onSubmit={form.onSubmit(submitForm)}>
+    <form onSubmit={form.onSubmit(values => submitForm(values))}>
       <TextInput
         withAsterisk
         label="Username"
