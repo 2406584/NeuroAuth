@@ -4,6 +4,7 @@ import argon2 from 'argon2'
 
 
 export default defineEventHandler(async event => {
+  
   const body =  await readBody(event);
 
   const prisma = GetDB();

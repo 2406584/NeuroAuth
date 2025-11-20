@@ -16,16 +16,37 @@ function Register() {
     },
 
     validate: {
-      username: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid username'),
       confirmPassword: (value, values) =>
         value === values.password ? null : 'Passwords do not match',
     },
   });
 
+  const submitForm = (values) => {
+    // fetch registration request to the server
+    let { username, password, termsOfService } = values;
+    if (!termsOfService) {
+      alert("You must agree to the terms of service to register.");
+      return;
+    }
+    fetch('http://localhost:3000/auth/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    })  .then(response => {
+        if (!response.ok) {
+            throw new Error('Registration failed');
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+  };
+
   return (
     <Container>
     <Title order={1}>Register</Title>
-    <form onSubmit={form.onSubmit((values) => console.log(values))}>
+    <form onSubmit={form.onSubmit(values => submitForm(values))}>
       <TextInput
         withAsterisk
         label="Username"
@@ -39,6 +60,8 @@ function Register() {
         label="Password"
         placeholder='YourPassword'
         visible={visible}
+        key={form.key('password')}
+        {...form.getInputProps('password')}
         onVisibilityChange={toggle}
       />
       <PasswordInput
@@ -46,6 +69,8 @@ function Register() {
         label="Confirm Password"
         placeholder='ConfirmYourPassword'
         visible={visible}
+        key={form.key('confirmPassword')}
+        {...form.getInputProps('confirmPassword')}
         onVisibilityChange={toggle}
       />
 

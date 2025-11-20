@@ -68,7 +68,8 @@ function Login() {
         withAsterisk
         label="Password"
         placeholder='YourPassword'
-        
+        key={form.key('password')}
+        {...form.getInputProps('password')}
         visible={visible}
         onVisibilityChange={toggle}
       />
