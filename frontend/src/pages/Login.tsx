@@ -20,7 +20,7 @@ function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void
   });
 
   const submitForm = (values: LoginFormValues) => {
-    // Handle form submission logic here
+    
     console.log(values);
 
     let { username, password, termsOfService } = values;
@@ -30,7 +30,7 @@ function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void
       return;
     }
 
-    // Send login request to the server to get JWT token
+ 
     fetch('http://localhost:3000/auth/login', {
         method: 'POST',
         headers: {

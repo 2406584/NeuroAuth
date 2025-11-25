@@ -23,7 +23,7 @@ function Register() {
   });
 
   const submitForm = (values: RegisterFormValues) => {
-    // fetch registration request to the server
+ 
     let { username, password, termsOfService } = values;
     if (!termsOfService) {
       alert("You must agree to the terms of service to register.");

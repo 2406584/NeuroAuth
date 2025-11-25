@@ -17,7 +17,7 @@ export default defineEventHandler(async event => {
   }
 
   try {
-    // Hash the password using Argon2id (recommended)
+    // Hash the password using Argon2id 
     const hash = await argon2.hash(password, {
       type: argon2.argon2id
     })
@@ -30,7 +30,7 @@ export default defineEventHandler(async event => {
       },
     })
 
-    // TODO: Save `username` and `hash` to your database
+  
     return { message: 'User registered successfully' }
   } catch (err) {
     console.error(err)

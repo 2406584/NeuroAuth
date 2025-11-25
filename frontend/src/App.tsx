@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router'; // 👈 Import Route from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router';
 import { createTheme, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { useEffect, useState } from 'react';
@@ -7,12 +7,10 @@ import { useEffect, useState } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import ProtectedRoutes from './components/ProtectedRoutes'; // 👈 Import the guard
+import ProtectedRoutes from './components/ProtectedRoutes';
 
 const App = () => {
-  const theme = createTheme({
-    // Your theme override here
-  });
+  const theme = createTheme({});
 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
 

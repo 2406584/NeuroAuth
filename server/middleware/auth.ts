@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   }
   else {
 
-  // The token is the part after "Bearer "
+
   const token = authHeader.substring(7);
 
 
