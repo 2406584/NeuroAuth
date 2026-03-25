@@ -1,4 +1,4 @@
-import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title } from '@mantine/core';
+import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router';
@@ -12,6 +12,7 @@ function Register() {
     initialValues: {
       username: '',
       password: '',
+      neuro: false,
       confirmPassword: '',
       termsOfService: false,
     },
@@ -24,7 +25,8 @@ function Register() {
 
   const submitForm = (values: RegisterFormValues) => {
  
-    let { username, password, termsOfService } = values;
+    let { username, password, termsOfService, neuro } = values;
+
     if (!termsOfService) {
       alert("You must agree to the terms of service to register.");
       return;
@@ -34,7 +36,7 @@ function Register() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, neuro }),
     })  .then(response => {
         if (!response.ok) {
             throw new Error('Registration failed');
@@ -74,7 +76,18 @@ function Register() {
         {...form.getInputProps('confirmPassword')}
         onVisibilityChange={toggle}
       />
-
+      <Select
+        withAsterisk
+        label="Neurodivergent"
+        placeholder="Do you recognise yourself as neurodivergent?"
+        key={form.key('neuro')}
+        {...form.getInputProps('neuro')}
+        data={[
+          { value: 'true', label: 'Yes' },
+          { value: 'false', label: 'No' },
+          { value: 'prefer-not-to-say', label: 'Prefer not to say' },
+        ]}
+      />
       <Checkbox
         mt="md"
         label="I agree to sell my privacy"

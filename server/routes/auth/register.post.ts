@@ -9,7 +9,7 @@ export default defineEventHandler(async event => {
 
   const prisma = GetDB();
 
-  const {username , password} = body
+  const {username , password, neuro} = body
   
 
   if (!username || !password) {
@@ -22,11 +22,18 @@ export default defineEventHandler(async event => {
       type: argon2.argon2id
     })
 
+    let finalNeuro: boolean | null = (String(neuro).toLowerCase() === 'true');
+
+    if (neuro == 'prefer-not-to-say') {
+      finalNeuro = null; // or you can choose to set it to false, depending on your application's needs
+    }
+
     // Run inside `async` function
     await prisma.users.create({
       data: {
         username: username,
-        password: hash
+        password: hash,
+        neuro: finalNeuro
       },
     })
 

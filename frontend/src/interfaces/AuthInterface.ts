@@ -6,6 +6,7 @@
  interface RegisterFormValues {
     username: string;
     password: string;
+    neuro: boolean;
     confirmPassword: string;
     termsOfService: boolean;
   }
