@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
   const publicRoutes = [
     '/auth/login',
     '/auth/register',
+    '/auth/attempt/record'
   ];
 
   // Check if the current route is public. If so, skip middleware.
