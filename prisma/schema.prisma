@@ -9,9 +9,27 @@ datasource db {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model users {
+model Users {
   id         BigInt   @id @unique @default(autoincrement())
   username   String?
   password   String?
+  neuro      Boolean?
   created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  login_metrics UsersLogin[]
+
+  @@map("users")
+}
+
+
+model UsersLogin {
+  id      BigInt   @id @unique @default(autoincrement())
+  user_id BigInt
+  attempt BigInt?
+  success Boolean
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  user Users @relation(fields: [user_id], references: [id])
+
+  @@map("users_login")
 }
