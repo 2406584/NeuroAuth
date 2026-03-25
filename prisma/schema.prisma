@@ -1,5 +1,5 @@
 generator client {
-   provider   = "prisma-client-js" 
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -17,19 +17,30 @@ model Users {
   created_at DateTime @default(now()) @db.Timestamptz(6)
 
   login_metrics UsersLogin[]
+  Phases        Phases[]
 
   @@map("users")
 }
 
-
 model UsersLogin {
-  id      BigInt   @id @unique @default(autoincrement())
-  user_id BigInt
-  attempt BigInt?
-  success Boolean
+  id         BigInt   @id @unique @default(autoincrement())
+  user_id    BigInt
+  attempt    BigInt?
+  success    Boolean
   created_at DateTime @default(now()) @db.Timestamptz(6)
 
   user Users @relation(fields: [user_id], references: [id])
 
   @@map("users_login")
+}
+
+model Phases {
+  id         BigInt   @id @unique @default(autoincrement())
+  user_id    BigInt
+  completed  Boolean
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  user Users @relation(fields: [user_id], references: [id])
+
+  @@map("phases")
 }
