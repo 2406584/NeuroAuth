@@ -7,20 +7,17 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const { username, password } = body
 
-    // Validate input
     if (!username || !password) {
       throw createError({
         statusCode: 400,
         statusMessage: "Username and password are required"
       })
     }
-    const prisma = GetDB();
 
-    // Find user by username
+    const prisma = GetDB()
+
     const user = await prisma.users.findFirst({
-      where: { 
-        username: username
-      }
+      where: { username }
     })
 
     if (!user) {
@@ -30,18 +27,94 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Verify password
-    
-    const isPasswordValid = await argon2.verify(user.password, password)
+    // 1. Fetch user's most recent Phases record
+    const latestPhase = await prisma.phases.findFirst({
+      where: { user_id: user.id },
+      orderBy: { created_at: 'desc' }
+    })
 
-    if (!isPasswordValid) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: "Invalid credentials"
+    // Skip phase check if user is SUPERADMIN so they can login anytime
+    if (user.role !== "SUPERADMIN") {
+      if (!latestPhase || latestPhase.completed) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: "No active phase released yet"
+        })
+      }
+
+      // 2. Count failed attempts since the active phase started
+      const failedAttempts = await prisma.usersLogin.count({
+        where: {
+          user_id: user.id,
+          success: false,
+          created_at: {
+            gte: latestPhase.created_at
+          }
+        }
       })
+
+      const phasesCount = await prisma.phases.count({ where: { user_id: user.id } })
+
+      if (failedAttempts >= 3) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: "Account locked for this phase. Contact admin for a password reset."
+        })
+      }
+
+      // 3. Verify password
+      const isPasswordValid = await argon2.verify(user.password, password)
+
+      if (!isPasswordValid) {
+        const attemptNum = failedAttempts + 1
+        await prisma.usersLogin.create({
+          data: {
+            user_id: user.id,
+            attempt: attemptNum,
+            success: false,
+            phase: phasesCount
+          }
+        })
+
+        if (attemptNum >= 3) {
+          throw createError({
+            statusCode: 403,
+            statusMessage: "Account locked for this phase. Contact admin for a password reset."
+          })
+        }
+
+        throw createError({
+          statusCode: 401,
+          statusMessage: "Invalid credentials"
+        })
+      }
+
+      // Success for normal user
+      const attemptNum = failedAttempts + 1
+      await prisma.usersLogin.create({
+        data: {
+          user_id: user.id,
+          attempt: attemptNum,
+          success: true,
+          phase: phasesCount
+        }
+      })
+
+      await prisma.phases.update({
+        where: { id: latestPhase.id },
+        data: { completed: true }
+      })
+    } else {
+      // Superadmin bypasses phase checks
+      const isPasswordValid = await argon2.verify(user.password, password)
+      if (!isPasswordValid) {
+        throw createError({
+          statusCode: 401,
+          statusMessage: "Invalid credentials"
+        })
+      }
     }
 
-    // Generate JWT token
     const jwtSecretKey = process.env.JWT_SECRET_KEY    
     if (!jwtSecretKey) {
       throw createError({
@@ -50,19 +123,24 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Issue token: Superadmin could get 7d, but users get 5m
+    const expiresIn = user.role === "SUPERADMIN" ? "7d" : "5m"
+
     const token = jwt.sign(
       {
         userId: typeof user.id === "bigint" ? user.id.toString() : user.id,
         username: user.username,
+        role: user.role,
         time: new Date().toISOString()
       },
       jwtSecretKey,
-      { expiresIn: "7d" }
+      { expiresIn }
     )
 
     const safeUser = {
       id: typeof user.id === "bigint" ? user.id.toString() : user.id,
-      username: user.username    
+      username: user.username,
+      role: user.role
     }
 
     return {
@@ -72,14 +150,10 @@ export default defineEventHandler(async (event) => {
     }
 
   } catch (error: any) {
-    // Handle specific errors
     if (error.statusCode) {
       throw error
     }
-    
-    // Log unexpected errors
     console.error("Login error:", error)
-    
     throw createError({
       statusCode: 500,
       statusMessage: "An error occurred during login"

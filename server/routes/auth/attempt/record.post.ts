@@ -14,11 +14,14 @@ export default eventHandler(async (event) => {
 
     const prisma = GetDB();
 
+    const phasesCount = await prisma.phases.count({ where: { user_id: BigInt(user_id) } })
+
     const newMetric = await prisma.UsersLogin.create({
       data: {
-        user_id: user_id,
+        user_id: BigInt(user_id),
         attempt: 1,
-        success: false
+        success: false,
+        phase: phasesCount
       }
     })
 
