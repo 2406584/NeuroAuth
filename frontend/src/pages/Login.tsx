@@ -46,7 +46,9 @@ function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void
     .then(data => {
         setAuthenticated(true);
         localStorage.setItem('token', data.token);
-        location.pathname === '/login' ? window.location.href = '/dashboard' : window.location.reload();
+        const payload = JSON.parse(atob(data.token.split('.')[1]));
+        const target = payload.role === 'SUPERADMIN' ? '/admin' : '/dashboard';
+        location.pathname === '/login' || location.pathname === '/' ? window.location.href = target : window.location.reload();
     }
     ).catch(error => {
         console.error('Error during login:', error);

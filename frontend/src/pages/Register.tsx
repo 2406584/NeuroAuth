@@ -90,7 +90,7 @@ function Register() {
       />
       <Checkbox
         mt="md"
-        label="I agree to sell my privacy"
+        label="I agree to participate in this research project and understand that my data will be used for research purposes only."
         key={form.key('termsOfService')}
         {...form.getInputProps('termsOfService', { type: 'checkbox' })}
       />
