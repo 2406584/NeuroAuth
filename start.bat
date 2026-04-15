@@ -12,6 +12,13 @@ timeout /t 10 /nobreak
 echo Launching frontend...
 start cmd /k "cd frontend && npm run dev"
 
+echo Migrating database...
+start cmd /k "npx prisma db push"
+timeout /t 10 /nobreak
+
+echo Seeding database...
+start cmd /k "npx prisma db seed"
+
 :: Start the backend/application in the CURRENT window
 echo Starting backend...
 npm run dev
