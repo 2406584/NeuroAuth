@@ -1,9 +1,14 @@
 import jwt from 'jsonwebtoken';
-import { defineEventHandler, getHeader, setResponseStatus } from 'h3';
+import { defineEventHandler, getHeader, setResponseStatus, getMethod } from 'h3';
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY || 'YOUR_SUPER_SECRET_KEY';
 
 export default defineEventHandler(async (event) => {
+  // Allow OPTIONS requests to pass through for CORS preflight
+  if (getMethod(event) === 'OPTIONS') {
+    return;
+  }
+
   const publicRoutes = [
     '/auth/login',
     '/auth/register',
