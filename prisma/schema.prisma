@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -13,6 +12,7 @@ model Users {
   password      String?
   created_at    DateTime     @default(now()) @db.Timestamptz(6)
   neuro         Boolean?
+  role          String       @default("USER")
   Phases        Phases[]
   login_metrics UsersLogin[]
 
@@ -24,6 +24,7 @@ model UsersLogin {
   user_id    BigInt
   attempt    BigInt?
   success    Boolean
+  phase      Int?
   created_at DateTime @default(now()) @db.Timestamptz(6)
   user       Users    @relation(fields: [user_id], references: [id])
 
