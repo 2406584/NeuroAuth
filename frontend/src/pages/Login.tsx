@@ -1,12 +1,14 @@
-import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title } from '@mantine/core';
+import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title, Alert, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import type { LoginFormValues } from '../interfaces/AuthInterface';
 
 
 function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void }) {
   const [visible, { toggle }] = useDisclosure(false); 
+  const [error, setError] = useState<string | null>(null);
   const location = useLocation();
 
 
@@ -20,13 +22,11 @@ function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void
   });
 
   const submitForm = (values: LoginFormValues) => {
-    
-    console.log(values);
-
+    setError(null);
     let { username, password, termsOfService } = values;
 
     if (!termsOfService) {
-      alert("You must agree to the terms of service to log in.");
+      setError("You must agree to the terms of service to log in.");
       return;
     }
 
@@ -37,9 +37,10 @@ function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-    })  .then(response => {
+    })  .then(async response => {
         if (!response.ok) {
-            throw new Error('Login failed');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.statusMessage || 'Login failed');
         }
         return response.json();
     })
@@ -52,13 +53,20 @@ function Login({ setAuthenticated }: { setAuthenticated: (auth: boolean) => void
     }
     ).catch(error => {
         console.error('Error during login:', error);
-        alert('Login failed: ' + error.message);
+        setError(error.message);
     });
   }
 
   return (
     <Container>
-    <Title order={1}>Login</Title>
+    <Title order={1} mb="md">Login</Title>
+    
+    {error && (
+      <Alert variant="light" color="red" title="Login Failed" mb="md">
+        {error}
+      </Alert>
+    )}
+
     <form onSubmit={form.onSubmit(values => submitForm(values))}>
       <TextInput
         withAsterisk

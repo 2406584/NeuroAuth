@@ -1,11 +1,14 @@
-import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title, Select } from '@mantine/core';
+import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title, Select, Alert } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import type { RegisterFormValues } from '../interfaces/AuthInterface';
 
 function Register() {
-      const [visible, { toggle }] = useDisclosure(false);
+  const [visible, { toggle }] = useDisclosure(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const form = useForm<RegisterFormValues>({
     mode: 'uncontrolled',
@@ -24,11 +27,12 @@ function Register() {
   });
 
   const submitForm = (values: RegisterFormValues) => {
- 
+    setError(null);
+    setSuccess(null);
     let { username, password, termsOfService, neuro } = values;
 
     if (!termsOfService) {
-      alert("You must agree to the terms of service to register.");
+      setError("You must agree to the terms of service to register.");
       return;
     }
     fetch('http://localhost:3000/auth/register', {
@@ -37,18 +41,34 @@ function Register() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password, neuro }),
-    })  .then(response => {
+    })  .then(async response => {
         if (!response.ok) {
-            throw new Error('Registration failed');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.statusMessage || 'Registration failed');
         }
+        setSuccess('Registration successful! You can now log in.');
     }).catch(error => {
         console.error('Error:', error);
+        setError(error.message);
     });
   };
 
   return (
     <Container>
-    <Title order={1}>Register</Title>
+    <Title order={1} mb="md">Register</Title>
+
+    {error && (
+      <Alert variant="light" color="red" title="Registration Failed" mb="md">
+        {error}
+      </Alert>
+    )}
+
+    {success && (
+      <Alert variant="light" color="green" title="Success" mb="md">
+        {success}
+      </Alert>
+    )}
+
     <form onSubmit={form.onSubmit(values => submitForm(values))}>
       <TextInput
         withAsterisk

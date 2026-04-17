@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18-alpine
+    image: postgres:17-alpine
     container_name: postgres_db
     restart: always
     environment:
@@ -10,7 +10,4 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - ./.data/db:/var/lib/postgresql/data

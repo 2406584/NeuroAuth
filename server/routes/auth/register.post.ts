@@ -16,6 +16,14 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 400, message: 'Missing username or password' })
   }
 
+  const existingUser = await prisma.users.findFirst({
+    where: { username }
+  });
+
+  if (existingUser) {
+    throw createError({ statusCode: 409, statusMessage: 'Username already exists' })
+  }
+
   try {
     // Hash the password using Argon2id 
     const hash = await argon2.hash(password, {
