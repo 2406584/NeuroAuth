@@ -31,7 +31,6 @@ export default eventHandler(async (event) => {
     }
 
   } catch (error: any) {
-    // If Prisma fails (e.g., database connection down)
     console.error("Metric Storage Error:", error)
     
     throw createError({

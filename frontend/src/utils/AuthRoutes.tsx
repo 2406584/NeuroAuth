@@ -8,7 +8,6 @@ const AuthRoutes = ({ authenticated }: { authenticated: boolean }) => {
         return (
             <>
                 <Route path="/dashboard" element={<Dashboard />} />
-                {/* Add more protected routes here */}
             </>
         )
     } else {
@@ -16,7 +15,6 @@ const AuthRoutes = ({ authenticated }: { authenticated: boolean }) => {
             <>
                 <Route path="/login" element={<Login setAuthenticated={() => authenticated} />} />
                 <Route path="/register" element={<Register />} />
-                {/* Add more public routes here */}
             </>
         )
     }

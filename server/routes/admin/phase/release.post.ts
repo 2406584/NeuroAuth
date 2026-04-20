@@ -15,11 +15,10 @@ export default defineEventHandler(async (event) => {
 
   const prisma = GetDB()
   
-  // Create phase for each user
   const results = await Promise.all(userIds.map(async (uid: string) => {
     const user_id = BigInt(uid)
     
-    // Check if there's already an active phase
+
     const latestPhase = await prisma.phases.findFirst({
       where: { user_id },
       orderBy: { created_at: 'desc' }

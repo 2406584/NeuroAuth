@@ -2,8 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router';
 import { createTheme, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { useEffect, useState } from 'react';
-
-// Import the components needed for routing
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';

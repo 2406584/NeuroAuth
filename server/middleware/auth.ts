@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { defineEventHandler, getHeader, setResponseStatus, getMethod } from 'h3';
 
-const JWT_SECRET = process.env.JWT_SECRET_KEY || 'YOUR_SUPER_SECRET_KEY';
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'SECRET_KEY';
 
 export default defineEventHandler(async (event) => {
-  // Allow OPTIONS requests to pass through for CORS preflight
   if (getMethod(event) === 'OPTIONS') {
     return;
   }
@@ -15,7 +14,6 @@ export default defineEventHandler(async (event) => {
     '/auth/attempt/record'
   ];
 
-  // Check if the current route is public. If so, skip middleware.
   const url = event.node.req.url;
   if (url && publicRoutes.some(route => url.startsWith(route))) {
     return;

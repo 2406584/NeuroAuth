@@ -10,7 +10,7 @@ const prisma = new PrismaClient({ adapter })
 
 async function main() {
   const username = 'admin'
-  const password = 'superpassword' // Remember to change this in a production environment
+  const password = 'superpassword'
 
   const existingAdmin = await prisma.users.findFirst({
     where: { username, role: 'SUPERADMIN' }

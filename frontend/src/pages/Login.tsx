@@ -1,4 +1,4 @@
-import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title, Alert, Text } from '@mantine/core';
+import { Button, Checkbox, Group, PasswordInput, Container, TextInput, Title, Alert } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';

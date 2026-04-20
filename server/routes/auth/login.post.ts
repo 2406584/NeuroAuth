@@ -27,13 +27,11 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // 1. Fetch user's most recent Phases record
     const latestPhase = await prisma.phases.findFirst({
       where: { user_id: user.id },
       orderBy: { created_at: 'desc' }
     })
 
-    // Skip phase check if user is SUPERADMIN so they can login anytime
     if (user.role !== "SUPERADMIN") {
       if (!latestPhase || latestPhase.completed) {
         throw createError({
@@ -42,7 +40,6 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      // 2. Count failed attempts since the active phase started
       const failedAttempts = await prisma.usersLogin.count({
         where: {
           user_id: user.id,
@@ -62,7 +59,6 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      // 3. Verify password
       const isPasswordValid = await argon2.verify(user.password, password)
 
       if (!isPasswordValid) {
@@ -89,7 +85,6 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      // Success for normal user
       const attemptNum = failedAttempts + 1
       await prisma.usersLogin.create({
         data: {
@@ -105,7 +100,7 @@ export default defineEventHandler(async (event) => {
         data: { completed: true }
       })
     } else {
-      // Superadmin bypasses phase checks
+
       const isPasswordValid = await argon2.verify(user.password, password)
       if (!isPasswordValid) {
         throw createError({
@@ -123,7 +118,6 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Issue token: Superadmin could get 7d, but users get 5m
     const expiresIn = user.role === "SUPERADMIN" ? "7d" : "5m"
 
     const token = jwt.sign(

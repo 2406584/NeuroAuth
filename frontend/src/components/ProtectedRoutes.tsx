@@ -7,10 +7,6 @@ interface ProtectedRouteProps {
   authenticated: boolean;
 }
 
-/**
- * Renders the component only if the user is authenticated.
- * Otherwise, redirects to the login page.
- */
 const ProtectedRoutes: React.FC<ProtectedRouteProps> = ({ element: Element, authenticated }) => {
   if (authenticated) {
     return <Element />;

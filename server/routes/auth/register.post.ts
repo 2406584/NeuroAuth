@@ -25,7 +25,7 @@ export default defineEventHandler(async event => {
   }
 
   try {
-    // Hash the password using Argon2id 
+    
     const hash = await argon2.hash(password, {
       type: argon2.argon2id
     })
@@ -33,10 +33,10 @@ export default defineEventHandler(async event => {
     let finalNeuro: boolean | null = (String(neuro).toLowerCase() === 'true');
 
     if (neuro == 'prefer-not-to-say') {
-      finalNeuro = null; // or you can choose to set it to false, depending on your application's needs
+      finalNeuro = null;
     }
 
-    // Run inside `async` function
+ 
     await prisma.users.create({
       data: {
         username: username,
